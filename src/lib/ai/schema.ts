@@ -38,11 +38,17 @@ export const commandOutputSchema = z.object({
         type: z.enum(INTENT_TYPES),
         lead_name: z.string().max(200).catch(""),
         title: z.string().max(300).catch(""),
-        priority: z.enum([...TASK_PRIORITIES, ""]).catch(""),
+        priority: z
+          .enum([...TASK_PRIORITIES, "none", ""])
+          .catch("")
+          .transform((v) => (v === "none" ? "" : v)),
         due_at: z
           .union([z.literal(""), z.string().datetime({ offset: true })])
           .catch(""),
-        status: z.enum([...LEAD_STATUSES, ""]).catch(""),
+        status: z
+          .enum([...LEAD_STATUSES, "none", ""])
+          .catch("")
+          .transform((v) => (v === "none" ? "" : v)),
         phone: z.string().max(30).catch(""),
         company: z.string().max(200).catch(""),
         note: z.string().max(2000).catch(""),
@@ -76,14 +82,14 @@ export const GEMINI_RESPONSE_SCHEMA = {
             description: "Lead the intent refers to, exactly as written; empty if none",
           },
           title: { type: "STRING", description: "Task title (create_task)" },
-          priority: { type: "STRING", enum: [...TASK_PRIORITIES, ""] },
+          priority: { type: "STRING", enum: [...TASK_PRIORITIES, "none"] },
           due_at: {
             type: "STRING",
             description: "ISO 8601 with +05:30 offset, or empty",
           },
           status: {
             type: "STRING",
-            enum: [...LEAD_STATUSES, ""],
+            enum: [...LEAD_STATUSES, "none"],
           },
           phone: { type: "STRING" },
           company: { type: "STRING" },
